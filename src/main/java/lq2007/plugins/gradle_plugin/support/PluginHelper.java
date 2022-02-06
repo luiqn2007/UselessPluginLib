@@ -10,8 +10,8 @@ import com.github.javaparser_new.ast.body.TypeDeclaration;
 import com.github.javaparser_new.ast.expr.*;
 import com.github.javaparser_new.ast.nodeTypes.NodeWithAnnotations;
 import com.github.javaparser_new.ast.nodeTypes.NodeWithIdentifier;
-import org.jetbrains.annotations.Nullable;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
