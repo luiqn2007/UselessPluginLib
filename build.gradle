@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.github.luiqn2007'
-project.version = '1.0.0'
+project.version = '1.0.1'
 
 repositories {
     mavenCentral()
