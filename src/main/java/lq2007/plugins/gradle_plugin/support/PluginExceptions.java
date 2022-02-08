@@ -3,10 +3,7 @@ package lq2007.plugins.gradle_plugin.support;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -17,20 +14,39 @@ import java.util.function.Function;
 public class PluginExceptions extends RuntimeException implements Map<Path, Exception> {
 
     private final Map<Path, Exception> exceptions = new HashMap<>();
+    private Exception exBegin = null, exFinished = null;
 
     @Override
     public void printStackTrace(PrintStream s) {
+        if (exBegin != null) {
+            exBegin.printStackTrace(s);
+        }
         values().forEach(e -> e.printStackTrace(s));
+        if (exFinished != null) {
+            exFinished.printStackTrace(s);
+        }
     }
 
     @Override
     public void printStackTrace(PrintWriter s) {
+        if (exBegin != null) {
+            exBegin.printStackTrace(s);
+        }
         values().forEach(e -> e.printStackTrace(s));
+        if (exFinished != null) {
+            exFinished.printStackTrace(s);
+        }
     }
 
     @Override
     public void printStackTrace() {
+        if (exBegin != null) {
+            exBegin.printStackTrace();
+        }
         values().forEach(Throwable::printStackTrace);
+        if (exFinished != null) {
+            exFinished.printStackTrace();
+        }
     }
 
     @Override
@@ -58,9 +74,25 @@ public class PluginExceptions extends RuntimeException implements Map<Path, Exce
         return exceptions.get(key);
     }
 
+    public Optional<Exception> getExceptionAtBegin() {
+        return Optional.ofNullable(exBegin);
+    }
+
+    public Optional<Exception> getExceptionAtFinished() {
+        return Optional.ofNullable(exFinished);
+    }
+
     @Override
     public Exception put(Path key, Exception value) {
         return exceptions.put(key, value);
+    }
+
+    public Exception setExceptionAtBegin(Exception value) {
+        return exBegin = value;
+    }
+
+    public Exception setExceptionAtFinished(Exception value) {
+        return exFinished = value;
     }
 
     @Override

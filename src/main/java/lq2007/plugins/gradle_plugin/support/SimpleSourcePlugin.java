@@ -5,7 +5,7 @@ import java.nio.file.Path;
 public class SimpleSourcePlugin implements ISourcePlugin {
 
     @Override
-    public void begin(PluginContext context, PluginHelper helper) {
+    public void begin(PluginContext context, PluginHelper helper) throws Exception {
 
     }
 
@@ -15,7 +15,7 @@ public class SimpleSourcePlugin implements ISourcePlugin {
     }
 
     @Override
-    public EnumLoopResult finished(PluginContext context, PluginHelper helper) {
+    public EnumLoopResult finished(PluginContext context, PluginHelper helper) throws Exception {
         return EnumLoopResult.FINISHED;
     }
 

@@ -9,8 +9,9 @@ public interface ISourcePlugin {
      *
      * @param context context, includes times, root path and exception(always empty)
      * @param helper plugin helper, includes some paths
+     * @throws Exception any exceptions, but can't stop the plugin, it can be found in context.
      */
-    void begin(PluginContext context, PluginHelper helper);
+    void begin(PluginContext context, PluginHelper helper) throws Exception;
 
     /**
      * Parse all files, not include directories
@@ -28,8 +29,9 @@ public interface ISourcePlugin {
      * @param context context, includes exceptions.
      * @param helper plugin helpers
      * @return loop result, decide whether the plugin is finished.
+     * @throws Exception any exceptions, but can't stop the plugin, it can be found in context.
      */
-    EnumLoopResult finished(PluginContext context, PluginHelper helper);
+    EnumLoopResult finished(PluginContext context, PluginHelper helper) throws Exception;
 
     /**
      * provide thr root directory or file to next loop.
