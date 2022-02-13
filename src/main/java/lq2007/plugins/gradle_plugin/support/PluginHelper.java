@@ -1,6 +1,7 @@
 package lq2007.plugins.gradle_plugin.support;
 
-import com.github.javaparser_new.*;
+import com.github.javaparser_new.JavaParser;
+import com.github.javaparser_new.ParserConfiguration;
 import com.github.javaparser_new.ast.CompilationUnit;
 import com.github.javaparser_new.ast.ImportDeclaration;
 import com.github.javaparser_new.ast.Node;
@@ -12,13 +13,7 @@ import com.github.javaparser_new.ast.nodeTypes.NodeWithAnnotations;
 import com.github.javaparser_new.ast.nodeTypes.NodeWithIdentifier;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -180,68 +175,6 @@ public final class PluginHelper {
     }
 
     /**
-     * Build an ast tree from file
-     *
-     * @param file path to a file containing Java source code
-     * @return CompilationUnit representing the Java source code
-     * @throws ParseProblemException    if the source code has parser errors
-     * @throws IllegalArgumentException if the result contains problems
-     * @throws IOException              the path could not be accessed
-     */
-    public CompilationUnit buildAST(Path file) throws IOException {
-        ParseResult<CompilationUnit> parse = parser.parse(file);
-        return parse.getResult().orElseThrow(() -> {
-            StringBuilder sb = new StringBuilder("Can't parse ").append(file).append('\n');
-            for (Problem problem : parse.getProblems()) {
-                sb.append(problem).append('\n');
-            }
-            return new IllegalArgumentException(sb.toString());
-        });
-    }
-
-    /**
-     * Save the new java source to file
-     *
-     * @param file   output file
-     * @param backup true while need backup (file need existed)
-     * @param unit   new java unit
-     * @throws IOException if an I/O error occurs.
-     */
-    public void writeTo(Path file, boolean backup, CompilationUnit unit) throws IOException {
-        if (backup && Files.isRegularFile(file)) {
-            Path path2 = file.getParent().resolve(file.getFileName().toString() + ".bak");
-            Files.copy(file, path2, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        if (!Files.isRegularFile(file)) {
-            Files.createFile(file);
-        }
-        Files.write(file, unit.toString().getBytes(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * Save the new java source to stream
-     *
-     * @param os   output stream
-     * @param unit new java unit
-     * @throws IOException if an I/O error occurs.
-     */
-    public void writeTo(OutputStream os, CompilationUnit unit) throws IOException {
-        os.write(unit.toString().getBytes(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * Save the new java source to writer
-     *
-     * @param writer output writer
-     * @param unit   new java unit
-     * @throws IOException if an I/O error occurs.
-     */
-    public void writeTo(Writer writer, CompilationUnit unit) throws IOException {
-        writer.write(unit.toString());
-    }
-
-    /**
      * get annotation's default value
      */
     public Optional<Expression> getAnnotationDefaultValue(AnnotationExpr annotation) {
@@ -385,10 +318,7 @@ public final class PluginHelper {
         ArrayInitializerExpr params = new ArrayInitializerExpr(paramStrings);
         pairs.add(new MemberValuePair("parameters", params));
         NormalAnnotationExpr expr = new NormalAnnotationExpr(new Name("Generated"), pairs);
-        NodeList<ImportDeclaration> imports = unit.getImports();
-        if (imports.stream().noneMatch(i -> ANN_GENERATED.equals(i.getNameAsString()))) {
-            imports.add(new ImportDeclaration(ANN_GENERATED, false, false));
-        }
+        unit.addImport(ANN_GENERATED);
         node.addAnnotation(expr);
     }
 
